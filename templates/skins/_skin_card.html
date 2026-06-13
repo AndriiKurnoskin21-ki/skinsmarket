@@ -1,0 +1,30 @@
+<article class="skin-card">
+    <a href="{{ skin.get_absolute_url }}" class="skin-card__link">
+        <div class="skin-card__img-wrap">
+            {% if skin.image %}
+                <img src="{{ skin.image.url }}" alt="{{ skin.name }}" class="skin-card__img">
+            {% elif skin.image_url %}
+                <img src="{{ skin.image_url }}" alt="{{ skin.name }}" class="skin-card__img">
+            {% else %}
+                <div class="skin-card__img skin-card__img--placeholder">{{ skin.game.icon }}</div>
+            {% endif %}
+            <div class="skin-card__rarity" style="background:{{ skin.rarity_color }}">
+                {{ skin.get_rarity_display }}
+            </div>
+            <div class="skin-card__game-tag">{{ skin.game.icon }} {{ skin.game.name }}</div>
+        </div>
+        <div class="skin-card__body">
+            <h3 class="skin-card__name">{{ skin.name }}</h3>
+            {% if skin.condition %}
+            <span class="skin-card__condition">{{ skin.get_condition_display }}</span>
+            {% endif %}
+            <div class="skin-card__footer">
+                <span class="skin-card__price">${{ skin.price }}</span>
+                <span class="skin-card__views">👁 {{ skin.views }}</span>
+            </div>
+        </div>
+    </a>
+    {% if user.is_authenticated and skin.seller != user and skin.status == 'available' %}
+    <a href="{% url 'add_to_cart' skin.pk %}" class="btn btn--primary btn--sm skin-card__buy">Купити</a>
+    {% endif %}
+</article>

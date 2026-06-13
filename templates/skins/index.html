@@ -1,0 +1,131 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}SkinsMarket — Купити та продати скіни Dota 2, CS2, Rust{% endblock %}
+
+{% block content %}
+
+<!-- HERO -->
+<section class="hero">
+    <div class="hero-bg"></div>
+    <div class="container hero-inner">
+        <div class="hero-text">
+            <div class="hero-badge">🇺🇦 Маркет #1 в Україні</div>
+            <h1 class="hero-title">
+                Торгуй скінами<br>
+                <span class="gradient-text">безпечно та швидко</span>
+            </h1>
+            <p class="hero-subtitle">Dota 2 · CS2 · Rust — понад {{ stats.total_skins }} скінів в одному місці</p>
+            <div class="hero-actions">
+                <a href="{% url 'skin_list' %}" class="btn btn--primary btn--lg">Переглянути каталог</a>
+                {% if user.is_authenticated %}
+                <a href="{% url 'sell_skin' %}" class="btn btn--outline btn--lg">Продати скін</a>
+                {% else %}
+                <a href="{% url 'register' %}" class="btn btn--outline btn--lg">Зареєструватись</a>
+                {% endif %}
+            </div>
+        </div>
+        <div class="hero-stats">
+            <div class="stat-card">
+                <span class="stat-number">{{ stats.total_skins }}+</span>
+                <span class="stat-label">Активних скінів</span>
+            </div>
+            <div class="stat-card">
+                <span class="stat-number">{{ stats.total_games }}</span>
+                <span class="stat-label">Ігри</span>
+            </div>
+            <div class="stat-card">
+                <span class="stat-number">{{ stats.sold_skins }}+</span>
+                <span class="stat-label">Продано</span>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- GAMES -->
+<section class="section">
+    <div class="container">
+        <div class="section-header">
+            <h2 class="section-title">Вибери гру</h2>
+            <a href="{% url 'skin_list' %}" class="section-link">Всі скіни →</a>
+        </div>
+        <div class="games-grid">
+            {% for game in games %}
+            <a href="{% url 'game_skins' game.slug %}" class="game-card" style="--game-color: {{ game.color }}">
+                {% if game.image %}
+                    <img src="{{ game.image.url }}" alt="{{ game.name }}" style="width:64px;height:64px;object-fit:contain;display:block;margin:0 auto;">
+                {% else %}
+                    <div class="game-icon">{{ game.icon }}</div>
+                {% endif %}
+                <div class="game-name">{{ game.name }}</div>
+                <div class="game-count">{{ game.skins.count }} скінів</div>
+            </a>
+            {% empty %}
+            <p class="empty-text">Ігри ще не додані</p>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+
+<!-- FEATURED SKINS -->
+<section class="section section--dark">
+    <div class="container">
+        <div class="section-header">
+            <h2 class="section-title">Популярні скіни</h2>
+            <a href="{% url 'skin_list' %}" class="section-link">Всі скіни →</a>
+        </div>
+        <div class="skins-grid">
+            {% for skin in featured_skins %}
+            {% include 'skins/_skin_card.html' with skin=skin %}
+            {% empty %}
+            <p class="empty-text">Скінів поки немає. <a href="{% url 'sell_skin' %}">Будьте першим!</a></p>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+
+<!-- NEW SKINS -->
+<section class="section">
+    <div class="container">
+        <div class="section-header">
+            <h2 class="section-title">Нові надходження</h2>
+            <a href="{% url 'skin_list' %}?sort=-created_at" class="section-link">Дивитись всі →</a>
+        </div>
+        <div class="skins-grid skins-grid--4">
+            {% for skin in recent_skins %}
+            {% include 'skins/_skin_card.html' with skin=skin %}
+            {% endfor %}
+        </div>
+    </div>
+</section>
+
+<!-- WHY US -->
+<section class="section section--dark">
+    <div class="container">
+        <h2 class="section-title" style="text-align:center;margin-bottom:3rem">Чому обирають нас</h2>
+        <div class="features-grid">
+            <div class="feature-card">
+                <div class="feature-icon">🔒</div>
+                <h3>Безпечні угоди</h3>
+                <p>Всі транзакції захищені. Гроші заморожуються до підтвердження отримання скіна.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">⚡</div>
+                <h3>Миттєва доставка</h3>
+                <p>Передача скінів відбувається автоматично через Steam API протягом хвилини.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">💰</div>
+                <h3>Найкращі ціни</h3>
+                <p>Торгуйте напряму без посередників. Найнижча комісія — лише 3%.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">🎮</div>
+                <h3>Три платформи</h3>
+                <p>Dota 2, CS2, Rust — все в одному місці. Зручний каталог та пошук.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+{% endblock %}

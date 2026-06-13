@@ -1,0 +1,66 @@
+{% extends 'base.html' %}
+{% block title %}Кошик — SkinsMarket{% endblock %}
+
+{% block content %}
+<div class="container" style="padding: 2rem 1rem; max-width: 900px;">
+    <h1 class="page-title" style="margin-bottom:2rem">🛒 Мій кошик</h1>
+
+    {% if items %}
+    <div class="cart-layout">
+        <div class="cart-items">
+            {% for item in items %}
+            <div class="cart-item">
+                <div class="cart-item__img">
+                    {% if item.skin.image %}
+                        <img src="{{ item.skin.image.url }}" alt="{{ item.skin.name }}">
+                    {% elif item.skin.image_url %}
+                        <img src="{{ item.skin.image_url }}" alt="{{ item.skin.name }}">
+                    {% else %}
+                        <div class="cart-item__placeholder">{{ item.skin.game.icon }}</div>
+                    {% endif %}
+                </div>
+                <div class="cart-item__info">
+                    <a href="{{ item.skin.get_absolute_url }}" class="cart-item__name">{{ item.skin.name }}</a>
+                    <span class="cart-item__game">{{ item.skin.game.icon }} {{ item.skin.game.name }}</span>
+                    <span class="cart-item__rarity" style="color: {{ item.skin.rarity_color }}">
+                        {{ item.skin.get_rarity_display }}
+                    </span>
+                    {% if item.skin.status != 'available' %}
+                    <span class="badge badge--warning">Недоступний</span>
+                    {% endif %}
+                </div>
+                <div class="cart-item__price">${{ item.skin.price }}</div>
+                <a href="{% url 'remove_from_cart' item.skin.pk %}" class="cart-item__remove" title="Видалити">✕</a>
+            </div>
+            {% endfor %}
+        </div>
+
+        <div class="cart-summary">
+            <h3 class="cart-summary__title">Підсумок</h3>
+            <div class="cart-summary__row">
+                <span>Товарів:</span>
+                <span>{{ items.count }}</span>
+            </div>
+            <div class="cart-summary__row cart-summary__total">
+                <span>Разом:</span>
+                <span>${{ cart.total }}</span>
+            </div>
+            <a href="{% url 'checkout' %}" class="btn btn--primary" style="width:100%;margin-top:1rem">
+                Оформити замовлення →
+            </a>
+            <a href="{% url 'skin_list' %}" class="btn btn--ghost" style="width:100%;margin-top:.5rem">
+                Продовжити покупки
+            </a>
+        </div>
+    </div>
+
+    {% else %}
+    <div class="empty-state">
+        <div class="empty-icon">🛒</div>
+        <h3>Кошик порожній</h3>
+        <p>Додайте скіни, які вам сподобались</p>
+        <a href="{% url 'skin_list' %}" class="btn btn--primary">Перейти до каталогу</a>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

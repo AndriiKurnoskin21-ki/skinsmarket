@@ -1,0 +1,36 @@
+{% extends 'base.html' %}
+{% block title %}Оформлення замовлення — SkinsMarket{% endblock %}
+
+{% block content %}
+<div class="container" style="padding: 2rem 1rem; max-width: 700px;">
+    <h1 class="page-title">Підтвердження замовлення</h1>
+
+    <div class="checkout-card">
+        <h3 style="margin-bottom:1.5rem">Ваші скіни:</h3>
+        {% for item in items %}
+        <div class="checkout-item">
+            <span class="checkout-item__name">
+                {{ item.skin.game.icon }} {{ item.skin.name }}
+                <small style="color: var(--text-muted)">{{ item.skin.get_rarity_display }}</small>
+            </span>
+            <span class="checkout-item__price">${{ item.skin.price }}</span>
+        </div>
+        {% endfor %}
+        <div class="checkout-total">
+            <span>Загальна сума:</span>
+            <span class="checkout-total__price">${{ cart.total }}</span>
+        </div>
+    </div>
+
+    <form method="post" style="margin-top: 2rem;">
+        {% csrf_token %}
+        <p style="color: var(--text-muted); margin-bottom: 1.5rem;">
+            Підтвердіть замовлення. Скіни будуть передані після оплати через Steam.
+        </p>
+        <div style="display: flex; gap: 1rem;">
+            <button type="submit" class="btn btn--primary btn--lg">✅ Підтвердити замовлення</button>
+            <a href="{% url 'cart' %}" class="btn btn--ghost btn--lg">Назад</a>
+        </div>
+    </form>
+</div>
+{% endblock %}

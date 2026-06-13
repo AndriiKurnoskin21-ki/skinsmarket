@@ -1,0 +1,161 @@
+{% extends 'base.html' %}
+{% block title %}{{ skin.name }} — SkinsMarket{% endblock %}
+
+{% block content %}
+<div class="container" style="padding: 2rem 1rem;">
+
+    <!-- BREADCRUMB -->
+    <nav class="breadcrumb">
+        <a href="{% url 'index' %}">Головна</a> /
+        <a href="{% url 'skin_list' %}">Каталог</a> /
+        <a href="{% url 'game_skins' skin.game.slug %}">{{ skin.game.name }}</a> /
+        <span>{{ skin.name }}</span>
+    </nav>
+
+    <div class="skin-detail-layout">
+        <!-- IMAGE -->
+        <div class="skin-detail-media">
+            <div class="skin-detail-img-wrap" style="border-color: {{ skin.rarity_color }}">
+                {% if skin.image %}
+                    <img src="{{ skin.image.url }}" alt="{{ skin.name }}" class="skin-detail-img">
+                {% elif skin.image_url %}
+                    <img src="{{ skin.image_url }}" alt="{{ skin.name }}" class="skin-detail-img">
+                {% else %}
+                    <div class="skin-placeholder-big">{{ skin.game.icon }}</div>
+                {% endif %}
+            </div>
+            <div class="skin-detail-badges">
+                <span class="rarity-badge" style="background: {{ skin.rarity_color }}">{{ skin.get_rarity_display }}</span>
+                {% if skin.condition %}
+                <span class="condition-badge">{{ skin.get_condition_display }}</span>
+                {% endif %}
+                <span class="game-badge">{{ skin.game.icon }} {{ skin.game.name }}</span>
+            </div>
+        </div>
+
+        <!-- INFO -->
+        <div class="skin-detail-info">
+            <h1 class="skin-detail-title">{{ skin.name }}</h1>
+
+            {% if avg_rating %}
+            <div class="rating-display">
+                {% for i in "12345" %}
+                    {% if forloop.counter <= avg_rating %}⭐{% else %}☆{% endif %}
+                {% endfor %}
+                <span class="rating-value">{{ avg_rating|floatformat:1 }} / 5</span>
+                <span class="rating-count">({{ reviews.count }} відгуків)</span>
+            </div>
+            {% endif %}
+
+            <div class="skin-detail-price">${{ skin.price }}</div>
+
+            {% if skin.float_value %}
+            <div class="float-bar-wrap">
+                <span class="float-label">Float: {{ skin.float_value|floatformat:6 }}</span>
+                <div class="float-bar">
+                    <div class="float-bar__fill" style="width: {{ skin.float_value|floatformat:0 }}%"></div>
+                </div>
+            </div>
+            {% endif %}
+
+            {% if skin.description %}
+            <p class="skin-detail-desc">{{ skin.description }}</p>
+            {% endif %}
+
+            <div class="skin-detail-meta">
+                <div class="meta-item">
+                    <span class="meta-label">Продавець</span>
+                    <span class="meta-value">{{ skin.seller.username }}</span>
+                </div>
+                <div class="meta-item">
+                    <span class="meta-label">Статус</span>
+                    <span class="meta-value status-{{ skin.status }}">{{ skin.get_status_display }}</span>
+                </div>
+                <div class="meta-item">
+                    <span class="meta-label">Переглядів</span>
+                    <span class="meta-value">{{ skin.views }}</span>
+                </div>
+            </div>
+
+            <div class="skin-detail-actions">
+                {% if skin.status == 'available' %}
+                    {% if user.is_authenticated %}
+                        {% if skin.seller == user %}
+                        <span class="btn btn--ghost" style="cursor:default">Це ваш скін</span>
+                        <form method="post" action="{% url 'delete_skin' skin.pk %}" onsubmit="return confirm('Видалити скін?')">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn--danger">Видалити</button>
+                        </form>
+                        {% else %}
+                        <a href="{% url 'add_to_cart' skin.pk %}" class="btn btn--primary btn--lg">🛒 Додати до кошика</a>
+                        {% endif %}
+                    {% else %}
+                    <a href="{% url 'login' %}" class="btn btn--primary btn--lg">Увійдіть, щоб купити</a>
+                    {% endif %}
+                {% else %}
+                <span class="btn btn--ghost btn--lg" style="cursor:default">{{ skin.get_status_display }}</span>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <!-- SIMILAR SKINS -->
+    {% if similar_skins %}
+    <section class="section" style="margin-top: 3rem;">
+        <div class="section-header">
+            <h2 class="section-title">Схожі скіни</h2>
+            <a href="{% url 'game_skins' skin.game.slug %}" class="section-link">Всі в {{ skin.game.name }} →</a>
+        </div>
+        <div class="skins-grid skins-grid--4">
+            {% for s in similar_skins %}
+            {% include 'skins/_skin_card.html' with skin=s %}
+            {% endfor %}
+        </div>
+    </section>
+    {% endif %}
+
+    <!-- REVIEWS -->
+    <section class="reviews-section">
+        <h2 class="section-title">Відгуки користувачів</h2>
+
+        {% if review_form %}
+        <div class="review-form-card">
+            <h3>Залишити відгук</h3>
+            <form method="post">
+                {% csrf_token %}
+                {% for field in review_form %}
+                <div class="form-group">
+                    <label class="form-label">{{ field.label }}</label>
+                    {{ field }}
+                    {% if field.errors %}
+                    <span class="field-error">{{ field.errors }}</span>
+                    {% endif %}
+                </div>
+                {% endfor %}
+                <button type="submit" class="btn btn--primary">Надіслати відгук</button>
+            </form>
+        </div>
+        {% endif %}
+
+        <div class="reviews-list">
+            {% for review in reviews %}
+            <div class="review-card">
+                <div class="review-header">
+                    <span class="review-author">{{ review.author.username }}</span>
+                    <div class="review-stars">
+                        {% for i in "12345" %}
+                            {% if forloop.counter <= review.rating %}⭐{% else %}☆{% endif %}
+                        {% endfor %}
+                    </div>
+                    <span class="review-date">{{ review.created_at|date:"d.m.Y" }}</span>
+                </div>
+                <p class="review-text">{{ review.text }}</p>
+            </div>
+            {% empty %}
+            <p class="empty-text">Відгуків поки немає. Будьте першим!</p>
+            {% endfor %}
+        </div>
+    </section>
+
+</div>
+{% endblock %}

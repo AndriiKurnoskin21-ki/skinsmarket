@@ -1,0 +1,27 @@
+{% extends 'base.html' %}
+{% block title %}Реєстрація — SkinsMarket{% endblock %}
+
+{% block content %}
+<div class="auth-page">
+    <div class="auth-card">
+        <div class="auth-logo">⚡</div>
+        <h1 class="auth-title">Створити акаунт</h1>
+
+        <form method="post">
+            {% csrf_token %}
+            {% for field in form %}
+            <div class="form-group">
+                <label class="form-label">{{ field.label }}</label>
+                {{ field }}
+                {% if field.errors %}<span class="field-error">{{ field.errors }}</span>{% endif %}
+            </div>
+            {% endfor %}
+            <button type="submit" class="btn btn--primary" style="width:100%;margin-top:1rem">Зареєструватись</button>
+        </form>
+
+        <div class="auth-footer">
+            Вже маєте акаунт? <a href="{% url 'login' %}">Увійти</a>
+        </div>
+    </div>
+</div>
+{% endblock %}

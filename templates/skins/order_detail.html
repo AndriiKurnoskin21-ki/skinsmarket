@@ -1,0 +1,34 @@
+{% extends 'base.html' %}
+{% block title %}Замовлення #{{ order.pk }} — SkinsMarket{% endblock %}
+
+{% block content %}
+<div class="container" style="padding: 2rem 1rem; max-width: 700px;">
+    <div class="order-success">
+        <div class="order-success__icon">🎉</div>
+        <h1>Замовлення оформлено!</h1>
+        <p>Замовлення <strong>#{{ order.pk }}</strong> від {{ order.created_at|date:"d.m.Y H:i" }}</p>
+        <span class="status-badge status-{{ order.status }}">{{ order.get_status_display }}</span>
+    </div>
+
+    <div class="checkout-card" style="margin-top: 2rem;">
+        <h3 style="margin-bottom: 1.5rem;">Придбані скіни:</h3>
+        {% for item in order.items.all %}
+        <div class="checkout-item">
+            <span class="checkout-item__name">
+                {{ item.skin.game.icon }} {{ item.skin.name }}
+            </span>
+            <span class="checkout-item__price">${{ item.price }}</span>
+        </div>
+        {% endfor %}
+        <div class="checkout-total">
+            <span>Загалом сплачено:</span>
+            <span class="checkout-total__price">${{ order.total_price }}</span>
+        </div>
+    </div>
+
+    <div style="display: flex; gap: 1rem; margin-top: 2rem;">
+        <a href="{% url 'profile' %}" class="btn btn--primary">Мої замовлення</a>
+        <a href="{% url 'skin_list' %}" class="btn btn--ghost">Продовжити покупки</a>
+    </div>
+</div>
+{% endblock %}

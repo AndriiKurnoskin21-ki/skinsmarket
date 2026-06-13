@@ -1,0 +1,26 @@
+{% extends 'base.html' %}
+{% block title %}Продати скін — SkinsMarket{% endblock %}
+
+{% block content %}
+<div class="container" style="padding: 2rem 1rem; max-width: 700px;">
+    <h1 class="page-title">Виставити скін на продаж</h1>
+
+    <div class="form-card">
+        <form method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+            {% for field in form %}
+            <div class="form-group">
+                <label class="form-label">{{ field.label }}{% if field.field.required %} *{% endif %}</label>
+                {{ field }}
+                {% if field.help_text %}<span class="field-help">{{ field.help_text }}</span>{% endif %}
+                {% if field.errors %}<span class="field-error">{{ field.errors }}</span>{% endif %}
+            </div>
+            {% endfor %}
+            <div style="display: flex; gap: 1rem; margin-top: 1.5rem;">
+                <button type="submit" class="btn btn--primary btn--lg">Виставити скін</button>
+                <a href="{% url 'index' %}" class="btn btn--ghost btn--lg">Скасувати</a>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

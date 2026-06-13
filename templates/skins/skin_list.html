@@ -1,0 +1,92 @@
+{% extends 'base.html' %}
+{% block title %}Каталог скінів — SkinsMarket{% endblock %}
+
+{% block content %}
+<div class="page-hero page-hero--sm">
+    <div class="container">
+        <h1 class="page-title">Каталог скінів</h1>
+    </div>
+</div>
+
+<div class="container" style="padding: 2rem 1rem;">
+    <div class="catalog-layout">
+
+        <!-- FILTERS SIDEBAR -->
+        <aside class="filters">
+            <h3 class="filters-title">Фільтри</h3>
+            <form method="get" action="{% url 'skin_list' %}">
+                <div class="filter-group">
+                    <label class="filter-label">Пошук</label>
+                    <input type="text" name="q" value="{{ search_query|default:'' }}" placeholder="Назва скіна..." class="form-input">
+                </div>
+
+                <div class="filter-group">
+                    <label class="filter-label">Гра</label>
+                    <select name="game" class="form-input">
+                        <option value="">Всі ігри</option>
+                        {% for game in games %}
+                        <option value="{{ game.slug }}" {% if selected_game == game.slug %}selected{% endif %}>
+                            {{ game.icon }} {{ game.name }}
+                        </option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div class="filter-group">
+                    <label class="filter-label">Рідкість</label>
+                    <select name="rarity" class="form-input">
+                        <option value="">Всі</option>
+                        {% for val, label in rarity_choices %}
+                        <option value="{{ val }}" {% if selected_rarity == val %}selected{% endif %}>{{ label }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div class="filter-group">
+                    <label class="filter-label">Ціна, $</label>
+                    <div class="price-range">
+                        <input type="number" name="min_price" placeholder="Від" class="form-input" min="0">
+                        <input type="number" name="max_price" placeholder="До" class="form-input" min="0">
+                    </div>
+                </div>
+
+                <div class="filter-group">
+                    <label class="filter-label">Сортування</label>
+                    <select name="sort" class="form-input">
+                        <option value="-created_at" {% if sort == '-created_at' %}selected{% endif %}>Нові спочатку</option>
+                        <option value="created_at" {% if sort == 'created_at' %}selected{% endif %}>Старі спочатку</option>
+                        <option value="price" {% if sort == 'price' %}selected{% endif %}>Ціна: зростання</option>
+                        <option value="-price" {% if sort == '-price' %}selected{% endif %}>Ціна: спадання</option>
+                        <option value="-views" {% if sort == '-views' %}selected{% endif %}>Популярні</option>
+                    </select>
+                </div>
+
+                <button type="submit" class="btn btn--primary" style="width:100%">Застосувати</button>
+                <a href="{% url 'skin_list' %}" class="btn btn--ghost" style="width:100%;margin-top:.5rem">Скинути</a>
+            </form>
+        </aside>
+
+        <!-- SKINS GRID -->
+        <div class="catalog-main">
+            <div class="catalog-info">
+                <span>Знайдено: <strong>{{ skins.count }}</strong> скінів</span>
+            </div>
+
+            {% if skins %}
+            <div class="skins-grid skins-grid--catalog">
+                {% for skin in skins %}
+                {% include 'skins/_skin_card.html' with skin=skin %}
+                {% endfor %}
+            </div>
+            {% else %}
+            <div class="empty-state">
+                <div class="empty-icon">🔍</div>
+                <h3>Нічого не знайдено</h3>
+                <p>Спробуйте змінити параметри пошуку</p>
+                <a href="{% url 'skin_list' %}" class="btn btn--primary">Скинути фільтри</a>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

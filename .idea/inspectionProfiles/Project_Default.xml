@@ -1,0 +1,23 @@
+<component name="InspectionProjectProfileManager">
+  <profile version="1.0">
+    <option name="myName" value="Project Default" />
+    <inspection_tool class="PyPackageRequirementsInspection" enabled="true" level="WARNING" enabled_by_default="true">
+      <option name="ignoredPackages">
+        <list>
+          <option value="aiogram" />
+          <option value="steam" />
+          <option value="math" />
+          <option value="random" />
+          <option value="datetime" />
+          <option value="os" />
+          <option value="sys" />
+          <option value="json" />
+          <option value="itertools" />
+          <option value="collections" />
+          <option value="functools" />
+          <option value="statistics" />
+        </list>
+      </option>
+    </inspection_tool>
+  </profile>
+</component>

@@ -1,0 +1,48 @@
+{% extends 'base.html' %}
+{% block title %}{{ game.name }} скіни — SkinsMarket{% endblock %}
+
+{% block content %}
+<div class="page-hero" style="border-bottom: 3px solid {{ game.color }}">
+    <div class="container">
+        <div style="font-size:4rem">{{ game.icon }}</div>
+        <h1 class="page-title">{{ game.name }}</h1>
+        <p style="color: var(--text-muted);">{{ skins.count }} скінів доступно</p>
+    </div>
+</div>
+
+<div class="container" style="padding: 2rem 1rem;">
+    <!-- GAME TABS -->
+    <div class="game-tabs">
+        {% for g in games %}
+        <a href="{% url 'game_skins' g.slug %}"
+           class="game-tab {% if g.slug == game.slug %}game-tab--active{% endif %}"
+           style="{% if g.slug == game.slug %}border-color: {{ g.color }}; color: {{ g.color }}{% endif %}">
+            {{ g.icon }} {{ g.name }}
+        </a>
+        {% endfor %}
+        <a href="{% url 'skin_list' %}" class="game-tab">Всі скіни</a>
+    </div>
+
+    {% if skins %}
+    <div class="skins-grid skins-grid--catalog">
+        {% for skin in skins %}
+        {% include 'skins/_skin_card.html' with skin=skin %}
+        {% endfor %}
+    </div>
+    {% else %}
+    <div class="empty-state">
+        <div class="empty-icon">{{ game.icon }}</div>
+        <h3>Поки немає скінів для {{ game.name }}</h3>
+        {% if user.is_authenticated %}
+        <a href="{% url 'sell_skin' %}" class="btn btn--primary">Виставити перший скін</a>
+        {% else %}
+        <a href="{% url 'register' %}" class="btn btn--primary">Зареєструватись і продати</a>
+        {% endif %}
+    </div>
+    {% endif %}
+
+    <div style="text-align:center; margin-top: 2rem;">
+        <a href="{% url 'index' %}" class="btn btn--ghost">← На головну</a>
+    </div>
+</div>
+{% endblock %}

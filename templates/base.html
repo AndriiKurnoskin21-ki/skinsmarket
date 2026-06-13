@@ -1,0 +1,134 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}SkinsMarket — Торгівля скінами{% endblock %}</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;500;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+</head>
+<body>
+
+<!-- HEADER -->
+<header class="header">
+    <div class="container header-inner">
+        <a href="{% url 'index' %}" class="logo">
+            <span class="logo-icon">⚡</span>
+            <span class="logo-text">Skins<span class="logo-accent">Market</span></span>
+        </a>
+
+        <nav class="nav">
+            <a href="{% url 'index' %}" class="nav-link">Головна</a>
+            <a href="{% url 'skin_list' %}" class="nav-link">Всі скіни</a>
+            <div class="nav-dropdown">
+                <span class="nav-link nav-link--dropdown">Ігри ▾</span>
+                <div class="dropdown-menu">
+                    {% for game in nav_games %}
+                    <a href="{% url 'game_skins' game.slug %}" class="dropdown-item">
+                        {{ game.icon }} {{ game.name }}
+                    </a>
+                    {% endfor %}
+                </div>
+            </div>
+            {% if user.is_authenticated %}
+            <a href="{% url 'sell_skin' %}" class="nav-link nav-link--highlight">+ Продати</a>
+            {% endif %}
+        </nav>
+
+        <div class="header-actions">
+            {% if user.is_authenticated %}
+                <a href="{% url 'cart' %}" class="btn btn--ghost btn--sm">🛒 Кошик</a>
+                <a href="{% url 'profile' %}" class="btn btn--ghost btn--sm">👤 {{ user.username }}</a>
+                <form method="post" action="{% url 'logout' %}" style="display:inline">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn--outline btn--sm">Вийти</button>
+                </form>
+            {% else %}
+                <a href="{% url 'login' %}" class="btn btn--ghost btn--sm">Увійти</a>
+                <a href="{% url 'register' %}" class="btn btn--primary btn--sm">Реєстрація</a>
+            {% endif %}
+        </div>
+    </div>
+</header>
+
+<!-- MESSAGES -->
+{% if messages %}
+<div class="messages-container">
+    {% for msg in messages %}
+    <div class="message message--{{ msg.tags }}">
+        {{ msg }}
+        <button class="message-close" onclick="this.parentElement.remove()">×</button>
+    </div>
+    {% endfor %}
+</div>
+{% endif %}
+
+<!-- MAIN CONTENT -->
+<main class="main">
+    {% block content %}{% endblock %}
+</main>
+
+<!-- FOOTER -->
+<footer class="footer">
+    <div class="container">
+        <div class="footer-grid">
+            <div class="footer-col">
+                <div class="logo" style="margin-bottom:1rem">
+                    <span class="logo-icon">⚡</span>
+                    <span class="logo-text">Skins<span class="logo-accent">Market</span></span>
+                </div>
+                <p class="footer-desc">Найбільший україномовний маркет скінів для Dota 2, CS2 та Rust. Безпечні угоди, швидка доставка.</p>
+            </div>
+
+            <div class="footer-col">
+                <h4 class="footer-heading">Навігація</h4>
+                <ul class="footer-links">
+                    <li><a href="{% url 'index' %}">Головна</a></li>
+                    <li><a href="{% url 'skin_list' %}">Каталог</a></li>
+                    {% if user.is_authenticated %}
+                    <li><a href="{% url 'sell_skin' %}">Продати скін</a></li>
+                    <li><a href="{% url 'profile' %}">Особистий кабінет</a></li>
+                    {% else %}
+                    <li><a href="{% url 'register' %}">Реєстрація</a></li>
+                    <li><a href="{% url 'login' %}">Вхід</a></li>
+                    {% endif %}
+                </ul>
+            </div>
+
+            <div class="footer-col">
+                <h4 class="footer-heading">Ігри</h4>
+                <ul class="footer-links">
+                    {% for game in nav_games %}
+                    <li><a href="{% url 'game_skins' game.slug %}">{{ game.icon }} {{ game.name }}</a></li>
+                    {% endfor %}
+                </ul>
+            </div>
+
+            <div class="footer-col">
+                <h4 class="footer-heading">Підписка на новини</h4>
+                <p class="footer-desc" style="margin-bottom:1rem">Отримуй сповіщення про нові скіни та акції</p>
+                <form method="post" action="{% url 'newsletter' %}" class="newsletter-form">
+                    {% csrf_token %}
+                    <input type="text" name="name" placeholder="Ваше ім'я" class="form-input form-input--sm" required>
+                    <input type="email" name="email" placeholder="your@email.com" class="form-input form-input--sm" required>
+                    <button type="submit" class="btn btn--primary btn--sm" style="width:100%">Підписатись</button>
+                </form>
+            </div>
+        </div>
+
+        <div class="footer-bottom">
+            <p>© 2025 SkinsMarket. Всі права захищені.</p>
+            <div class="footer-badges">
+                <span class="badge">🔒 Безпечно</span>
+                <span class="badge">⚡ Швидко</span>
+                <span class="badge">🇺🇦 Україна</span>
+            </div>
+        </div>
+    </div>
+</footer>
+
+<script src="{% static 'js/main.js' %}"></script>
+</body>
+</html>
