@@ -85,3 +85,6 @@ LOGOUT_REDIRECT_URL = '/'
 LOGIN_URL = '/login/'
 
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+CSRF_TRUSTED_ORIGINS = [
+    'https://skinsmarket-production.up.railway.app',
+]
